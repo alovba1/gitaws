@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'org.sonarqube' version '4.0.0.2929'
+}
+
+group = 'com.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport // Genera el informe de cobertura después de las pruebas
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "my-sonar-project"
+        property "sonar.host.url", "http://your-sonarqube-server"
+        property "sonar.login", "your-sonarqube-token"
+    }
+}

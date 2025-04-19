@@ -1,0 +1,38 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  JAVA_HOME: '/usr/lib/jvm/java-17-openjdk-amd64'
+  GRADLE_HOME: '/usr/share/gradle'
+  DOCKER_IMAGE: 'my-docker-image'
+  DOCKER_REGISTRY: '<docker-registry-url>'
+
+steps:
+  # Usa la versión específica de Java
+  - task: UseJavaVersion@1
+    inputs:
+      version: '17'
+      architecture: 'x64'
+
+  # Ejecuta pruebas, genera reporte de cobertura y análisis con SonarQube
+  - script: |
+      echo "Instalando dependencias..."
+      gradle clean test jacocoTestReport sonarqube
+    displayName: 'Run Tests and Generate Coverage Report'
+
+  # Publica los artefactos si es necesario
+  - publish: target/*.jar
+    artifact: 'build'
+    displayName: 'Publicar artefactos construidos'
+
+  # Construcción y publicación de la imagen de Docker
+  - task: Docker@2
+    inputs:
+      command: 'buildAndPush'
+      repository: '$(DOCKER_REGISTRY)/$(DOCKER_IMAGE)'
+      dockerfile: '**/Dockerfile'
+      tags: |
+        latest
