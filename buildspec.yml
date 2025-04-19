@@ -19,6 +19,7 @@ phases:
   pre_build:
     commands:
       - echo "Estableciendo permisos para gradlew..."
+      - gradle wrapper
       - chmod +x gradlew
       - ls -la
 
