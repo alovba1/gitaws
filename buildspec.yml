@@ -7,25 +7,26 @@ env:
     JAVA_HOME: 'C:\\Program Files\\Java\\jdk-17'
     GRADLE_HOME: 'C:\\Gradle'
 
-
 phases:
-    install:
-      commands:
-        - echo "Instalando Java y Gradle..."
-        - apt-get install openjdk-17-jdk -y
-        - apt-get install gradle -y
-
-
+  install:
+    commands:
+      - echo "Instalando Java y Gradle..."
+      - apt-get install openjdk-17-jdk -y
+      - apt-get install gradle -y
+      - java -version
 
   pre_build:
     commands:
       - echo "Estableciendo permisos para gradlew..."
       - chmod +x gradlew
+      - ls -la gradlew
+
   build:
     commands:
       - echo "Iniciando compilación y pruebas con Gradle..."
-      - ./gradlew clean test jacocoTestReport sonarqube
+      - ./gradlew clean test jacocoTestReport sonarqube --stacktrace --info
       - echo "Compilación y análisis completados."
+
   post_build:
     commands:
       - echo "Construyendo y subiendo imagen de Docker..."
