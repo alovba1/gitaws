@@ -1,38 +1,31 @@
-trigger:
-  - main
+version: 0.2
 
-pool:
-  vmImage: 'ubuntu-latest'
+env:
+  variables:
+    DOCKER_IMAGE: 'my-docker-image'
+    DOCKER_REGISTRY: 'albert1w22/awsrepodocker'
+    JAVA_HOME: 'C:\\Program Files\\Java\\jdk-17'
+    GRADLE_HOME: 'C:\\Gradle'
 
-variables:
-  JAVA_HOME: '/usr/lib/jvm/java-17-openjdk-amd64'
-  GRADLE_HOME: '/usr/share/gradle'
-  DOCKER_IMAGE: 'my-docker-image'
-  DOCKER_REGISTRY: '<docker-registry-url>'
 
-steps:
-  # Usa la versión específica de Java
-  - task: UseJavaVersion@1
-    inputs:
-      version: '17'
-      architecture: 'x64'
+phases:
+  pre_build:
+    commands:
+      - echo "Estableciendo permisos para gradlew..."
+      - chmod +x gradlew
+  build:
+    commands:
+      - echo "Iniciando compilación y pruebas con Gradle..."
+      - ./gradlew clean test jacocoTestReport sonarqube
+      - echo "Compilación y análisis completados."
+  post_build:
+    commands:
+      - echo "Construyendo y subiendo imagen de Docker..."
+      - docker build -t $DOCKER_REGISTRY/$DOCKER_IMAGE .
+      - docker push $DOCKER_REGISTRY/$DOCKER_IMAGE
+      - echo "Imagen de Docker subida al repositorio."
 
-  # Ejecuta pruebas, genera reporte de cobertura y análisis con SonarQube
-  - script: |
-      echo "Instalando dependencias..."
-      gradle clean test jacocoTestReport sonarqube
-    displayName: 'Run Tests and Generate Coverage Report'
-
-  # Publica los artefactos si es necesario
-  - publish: target/*.jar
-    artifact: 'build'
-    displayName: 'Publicar artefactos construidos'
-
-  # Construcción y publicación de la imagen de Docker
-  - task: Docker@2
-    inputs:
-      command: 'buildAndPush'
-      repository: '$(DOCKER_REGISTRY)/$(DOCKER_IMAGE)'
-      dockerfile: '**/Dockerfile'
-      tags: |
-        latest
+artifacts:
+  files:
+    - target/*.jar
+  discard-paths: no
