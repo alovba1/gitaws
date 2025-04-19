@@ -4,7 +4,7 @@ env:
   variables:
     DOCKER_IMAGE: 'my-docker-image'
     DOCKER_REGISTRY: 'albert1w22/awsrepodocker'
-    SONAR_HOST_URL: 'http://<200.118.80.164>:9000' # Cambia por la URL pública del servidor
+    SONAR_HOST_URL: 'http://200.118.80.164:9000' # Dirección pública del servidor SonarQube
     SONAR_TOKEN: 'sqp_fe0bd42c0771f7fdcb4cb8584f546f37a5d0dac0'
 
 phases:
@@ -18,14 +18,16 @@ phases:
 
   pre_build:
     commands:
+      - echo "Moviéndome al subdirectorio gitaws..."
+      - cd gitaws
       - echo "Estableciendo permisos para gradlew..."
-      - gradle wrapper
       - chmod +x gradlew
       - ls -la
 
   build:
     commands:
       - echo "Iniciando análisis con SonarQube..."
+      - cd gitaws # Cambiar al subdirectorio nuevamente si es necesario
       - ./gradlew clean test jacocoTestReport sonarqube \
         -Dsonar.host.url=$SONAR_HOST_URL \
         -Dsonar.login=$SONAR_TOKEN
@@ -33,6 +35,8 @@ phases:
 
   post_build:
     commands:
+      - echo "Moviéndome al subdirectorio gitaws..."
+      - cd gitaws
       - echo "Construyendo y subiendo imagen de Docker..."
       - docker build -t $DOCKER_REGISTRY/$DOCKER_IMAGE .
       - docker push $DOCKER_REGISTRY/$DOCKER_IMAGE
@@ -40,5 +44,5 @@ phases:
 
 artifacts:
   files:
-    - build/libs/*.jar
+    - gitaws/build/libs/*.jar # Ajusta la ruta para los artefactos, según la estructura de tu proyecto
   discard-paths: no
