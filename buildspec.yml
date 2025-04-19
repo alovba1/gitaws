@@ -9,6 +9,14 @@ env:
 
 
 phases:
+    install:
+      commands:
+        - echo "Instalando Java y Gradle..."
+        - apt-get install openjdk-17-jdk -y
+        - apt-get install gradle -y
+
+
+
   pre_build:
     commands:
       - echo "Estableciendo permisos para gradlew..."
