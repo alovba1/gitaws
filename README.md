@@ -1,0 +1,2 @@
+# gitaws
+ deploy with aws
