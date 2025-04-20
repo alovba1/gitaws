@@ -1,7 +1,7 @@
 FROM openjdk:17-jdk-slim
 
 # Definir variable de entorno
-ENV APP_JAR=build/libs/demo-1.0-SNAPSHOT.jar
+ENV APP_JAR=build/libs/dem-1.0-SNAPSHOT.jar
 
 # Copiar el archivo JAR al contenedor
 COPY ${APP_JAR} app.jar

@@ -1,0 +1,17 @@
+family: tu-familia-de-tarea
+networkMode: awsvpc
+containerDefinitions:
+  - name: nombre-del-contenedor
+    image: albert1w22/awsimg:v1
+    memory: 512
+    cpu: 256
+    essential: true
+    portMappings:
+      - containerPort: 80
+        hostPort: 80
+        protocol: tcp
+taskRoleArn: arn:aws:iam::tu-id-de-cuenta:role/tu-rol-de-tarea
+executionRoleArn: arn:aws:iam::tu-id-de-cuenta:role/tu-rol-de-ejecucion
+requiresCompatibilities: []
+cpu: "256"
+memory: "512"
